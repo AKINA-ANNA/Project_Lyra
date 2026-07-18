@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VM Portal — Console</title>
+    <!-- Google Fonts Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+
+    <!-- Loading Screen Overlay -->
+    <div class="loading-screen" id="loading-screen">
+        <div class="loading-content">
+            <!-- 3D Spinning Cube Wrapper -->
+            <div class="cube-container">
+                <div class="cube" id="cube">
+                    <div class="face front"><i class="fa-solid fa-cube"></i></div>
+                    <div class="face back"><i class="fa-solid fa-server"></i></div>
+                    <div class="face left"><i class="fa-solid fa-microchip"></i></div>
+                    <div class="face right"><i class="fa-solid fa-network-wired"></i></div>
+                    <div class="face top"><i class="fa-solid fa-terminal"></i></div>
+                    <div class="face bottom"><i class="fa-solid fa-database"></i></div>
+                </div>
+            </div>
+            <h2 class="loading-logo">VM PORTAL</h2>
+            <div class="loading-status-container">
+                <div class="loading-status" id="loading-status-text">Scanning Agent...</div>
+                <div class="loading-bar"><div class="fill" id="loading-bar-fill" style="width: 0%"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Background Particle Canvas & Blobs -->
+    <canvas id="dashboard-particles"></canvas>
+    <div class="aurora-container">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <!-- App Container -->
+    <div class="app-layout">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="logo">
+                    <div class="logo-icon"><i class="fa-solid fa-cube"></i></div>
+                    <span>VM PORTAL</span>
+                </a>
+                <div class="agent-connection-dot status-disconnected" id="agent-conn-dot" title="Connection Status"></div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-tab="dashboard">
+                    <i class="fa-solid fa-chart-pie"></i><span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="templates">
+                    <i class="fa-solid fa-layer-group"></i><span>Templates</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="running-vms">
+                    <i class="fa-solid fa-server"></i><span>Running VMs</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="activity">
+                    <i class="fa-solid fa-clock-rotate-left"></i><span>Activity</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="system">
+                    <i class="fa-solid fa-heart-pulse"></i><span>System Health</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="settings">
+                    <i class="fa-solid fa-sliders"></i><span>Settings</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <img src="" alt="Avatar" id="user-avatar" class="avatar">
+                    <div class="user-details">
+                        <span class="username" id="user-display-name">Loading...</span>
+                        <span class="email" id="user-email">...</span>
+                    </div>
+                </div>
+                <button class="logout-btn" id="btn-logout" title="Sign Out">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-container">
+            <!-- Top Header Bar -->
+            <header class="topbar">
+                <div class="search-box-container" onclick="openCommandPalette()">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Search Console... (Ctrl+K)" disabled class="search-trigger-input">
+                    <span class="search-shortcut">⌘K</span>
+                </div>
+
+                <div class="header-right">
+                    <div class="weather-widget" id="header-weather" title="Local weather">
+                        <i class="fa-solid fa-cloud-sun"></i><span>78°F Sunny</span>
+                    </div>
+                    <div class="clock-widget" id="header-clock">
+                        <i class="fa-regular fa-clock"></i><span>00:00:00 AM</span>
+                    </div>
+                    <div class="notification-bell" id="notification-trigger">
+                        <i class="fa-solid fa-bell"></i>
+                        <span class="badge" id="notification-badge" style="display: none;">0</span>
+                        
+                        <!-- Notification Dropdown -->
+                        <div class="notification-dropdown glass-card" id="notification-dropdown">
+                            <div class="dropdown-header">
+                                <span>Notifications</span>
+                                <a href="#" id="btn-clear-notifications">Clear All</a>
+                            </div>
+                            <div class="dropdown-body" id="notification-list">
+                                <div class="empty-state">No new alerts</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="connection-status-pill" id="agent-status-pill">
+                        <span class="dot"></span><span class="text">Agent Offline</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Tabs Wrapper -->
+            <div class="tab-content-wrapper">
+                
+                <!-- 1. DASHBOARD OVERVIEW TAB -->
+                <section class="tab-pane active" id="pane-dashboard">
+                    <div class="pane-header">
+                        <h2>Overview</h2>
+                        <p>Real-time system telemetry and virtualization summary</p>
+                    </div>
+
+                    <!-- Summary Cards Grid -->
+                    <div class="stats-grid">
+                        <div class="glass-card stat-card glow-cyan">
+                            <div class="card-header">
+                                <span>Running VMs</span>
+                                <i class="fa-solid fa-play"></i>
+                            </div>
+                            <h3 class="stat-value counter" id="stat-running-vms">0</h3>
+                            <div class="card-footer">Clones actively deployed</div>
+                        </div>
+                        <div class="glass-card stat-card glow-purple">
+                            <div class="card-header">
+                                <span>Stopped VMs</span>
+                                <i class="fa-solid fa-stop"></i>
+                            </div>
+                            <h3 class="stat-value counter" id="stat-stopped-vms">0</h3>
+                            <div class="card-footer">Clones offline</div>
+                        </div>
+                        <div class="glass-card stat-card glow-pink">
+                            <div class="card-header">
+                                <span>Discovered Templates</span>
+                                <i class="fa-solid fa-layer-group"></i>
+                            </div>
+                            <h3 class="stat-value counter" id="stat-templates">0</h3>
+                            <div class="card-footer">VMs ending in -Master</div>
+                        </div>
+                        <div class="glass-card stat-card glow-blue">
+                            <div class="card-header">
+                                <span>Host CPU Usage</span>
+                                <i class="fa-solid fa-microchip"></i>
+                            </div>
+                            <h3 class="stat-value" id="stat-host-cpu">0.0%</h3>
+                            <div class="card-footer">
+                                <div class="mini-bar"><div class="fill" id="stat-cpu-bar" style="width: 0%"></div></div>
+                            </div>
+                        </div>
+                        <div class="glass-card stat-card glow-green">
+                            <div class="card-header">
+                                <span>Host RAM Usage</span>
+                                <i class="fa-solid fa-memory"></i>
+                            </div>
+                            <h3 class="stat-value" id="stat-host-ram">0.0%</h3>
+                            <div class="card-footer">
+                                <div class="mini-bar"><div class="fill" id="stat-ram-bar" style="width: 0%"></div></div>
+                            </div>
+                        </div>
+                        <div class="glass-card stat-card glow-orange">
+                            <div class="card-header">
+                                <span>Host Disk Usage</span>
+                                <i class="fa-solid fa-database"></i>
+                            </div>
+                            <h3 class="stat-value" id="stat-host-disk">0.0%</h3>
+                            <div class="card-footer">
+                                <div class="mini-bar"><div class="fill" id="stat-disk-bar" style="width: 0%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 2: Charts and Quick Actions -->
+                    <div class="dashboard-row-2">
+                        <!-- Chart Card -->
+                        <div class="glass-card chart-card">
+                            <div class="card-header">
+                                <h3>Resource Telemetry History</h3>
+                                <div class="chart-legend">
+                                    <span class="legend-item"><span class="color-dot cpu"></span>CPU</span>
+                                    <span class="legend-item"><span class="color-dot ram"></span>RAM</span>
+                                </div>
+                            </div>
+                            <div class="chart-body">
+                                <svg id="telemetry-chart" viewBox="0 0 500 150">
+                                    <!-- Dynamic Paths will go here -->
+                                    <path id="cpu-path" d="" fill="none" stroke="var(--primary-glow)" stroke-width="2"></path>
+                                    <path id="ram-path" d="" fill="none" stroke="var(--secondary-glow)" stroke-width="2"></path>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- Quick Actions Panel -->
+                        <div class="glass-card actions-panel">
+                            <h3>Quick Actions</h3>
+                            <div class="quick-grid">
+                                <button class="btn btn-secondary" onclick="switchTab('templates')">
+                                    <i class="fa-solid fa-circle-plus"></i> Deploy VM
+                                </button>
+                                <button class="btn btn-secondary" onclick="triggerBatchAction('stop')">
+                                    <i class="fa-solid fa-power-off"></i> Stop All VMs
+                                </button>
+                                <button class="btn btn-secondary" onclick="openCommandPalette()">
+                                    <i class="fa-solid fa-terminal"></i> Command Palette
+                                </button>
+                                <button class="btn btn-secondary" onclick="switchTab('system')">
+                                    <i class="fa-solid fa-gears"></i> Host Status
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. TEMPLATES TAB -->
+                <section class="tab-pane" id="pane-templates">
+                    <div class="pane-header">
+                        <h2>Templates</h2>
+                        <p>Select a verified Master Template VM image to clone and deploy a fresh sandbox environment</p>
+                    </div>
+
+                    <!-- Templates Grid -->
+                    <div class="templates-grid" id="templates-list-container">
+                        <!-- Templates will load here via Javascript -->
+                        <div class="skeleton-card"></div>
+                        <div class="skeleton-card"></div>
+                    </div>
+                </section>
+
+                <!-- 3. RUNNING VMS TAB -->
+                <section class="tab-pane" id="pane-running-vms">
+                    <div class="pane-header">
+                        <div class="header-split">
+                            <div>
+                                <h2>Deploys & Clones</h2>
+                                <p>Monitor telemetry, attach console windows, and manage active virtual machines</p>
+                            </div>
+                            <div class="filter-controls">
+                                <div class="filter-search-wrapper">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                    <input type="text" id="vm-search-input" placeholder="Filter VMs...">
+                                </div>
+                                <select id="vm-filter-status" class="filter-select">
+                                    <option value="all">All States</option>
+                                    <option value="running">Running</option>
+                                    <option value="stopped">Stopped</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- VMs List -->
+                    <div class="vms-grid" id="vms-list-container">
+                        <!-- Cloned VMs populated by JS -->
+                        <div class="skeleton-card"></div>
+                        <div class="skeleton-card"></div>
+                    </div>
+                </section>
+
+                <!-- 4. ACTIVITY LOG TAB -->
+                <section class="tab-pane" id="pane-activity">
+                    <div class="pane-header">
+                        <h2>Activity Timeline</h2>
+                        <p>Audited record of local VM Agent actions and VBoxManage command invocations</p>
+                    </div>
+
+                    <div class="glass-card activity-card">
+                        <div class="activity-timeline" id="activity-log-timeline">
+                            <!-- Populated dynamically -->
+                            <div class="timeline-empty">No activity logged.</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 5. SYSTEM HEALTH TAB -->
+                <section class="tab-pane" id="pane-system">
+                    <div class="pane-header">
+                        <h2>System Diagnostics</h2>
+                        <p>Hardware resources of the host system running the VM Local Agent</p>
+                    </div>
+
+                    <div class="system-grid">
+                        <!-- Left Specs -->
+                        <div class="glass-card sys-details-card">
+                            <h3>Host Environment</h3>
+                            <div class="spec-list">
+                                <div class="spec-item">
+                                    <span class="label">Operating System</span>
+                                    <span class="val" id="sys-os">-</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="label">Python Version</span>
+                                    <span class="val" id="sys-py">-</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="label">FastAPI Version</span>
+                                    <span class="val" id="sys-fastapi">-</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="label">VirtualBox Version</span>
+                                    <span class="val" id="sys-vbox">-</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="label">VBoxManage Executable Path</span>
+                                    <span class="val path-text" id="sys-vbox-path">-</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="label">Local Agent URL</span>
+                                    <span class="val">http://127.0.0.1:8000</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="label">Diagnostics Status</span>
+                                    <span class="val text-success" id="sys-agent-status">-</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="label">Last Telemetry Sync</span>
+                                    <span class="val" id="sys-sync-time">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Telemetry Graphs -->
+                        <div class="sys-metrics-panel">
+                            <div class="glass-card metric-progress-card">
+                                <div class="metric-header">
+                                    <span>CPU Utilization</span>
+                                    <span class="metric-percent" id="progress-cpu-val">0%</span>
+                                </div>
+                                <div class="progress-bar-large"><div class="fill" id="progress-cpu-fill" style="width: 0%"></div></div>
+                            </div>
+                            <div class="glass-card metric-progress-card">
+                                <div class="metric-header">
+                                    <span>RAM Memory</span>
+                                    <span class="metric-percent" id="progress-ram-val">0% (0 GB / 0 GB)</span>
+                                </div>
+                                <div class="progress-bar-large"><div class="fill" id="progress-ram-fill" style="width: 0%"></div></div>
+                            </div>
+                            <div class="glass-card metric-progress-card">
+                                <div class="metric-header">
+                                    <span>Storage Disk</span>
+                                    <span class="metric-percent" id="progress-disk-val">0% (0 GB / 0 GB)</span>
+                                </div>
+                                <div class="progress-bar-large"><div class="fill" id="progress-disk-fill" style="width: 0%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 6. SETTINGS TAB -->
+                <section class="tab-pane" id="pane-settings">
+                    <div class="pane-header">
+                        <h2>Console Settings</h2>
+                        <p>Manage connection limits, telemetry updates, and look themes</p>
+                    </div>
+
+                    <div class="settings-container">
+                        <div class="glass-card settings-card">
+                            <h3>Telemetry & Polling</h3>
+                            <div class="form-group">
+                                <label for="setting-poll-rate">Refresh Interval (Seconds)</label>
+                                <select id="setting-poll-rate" class="form-select">
+                                    <option value="2000">2 seconds (System Health)</option>
+                                    <option value="5000">5 seconds (Recommended)</option>
+                                    <option value="10000">10 seconds</option>
+                                    <option value="30000">30 seconds</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Notification Alerts</label>
+                                <div class="checkbox-wrapper">
+                                    <input type="checkbox" id="setting-alert-sound" checked>
+                                    <label for="setting-alert-sound">Enable Toast alerts on actions</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-card settings-card">
+                            <h3>Aesthetics & Theme</h3>
+                            <div class="form-group">
+                                <label>Glow variations</label>
+                                <div class="theme-glow-options">
+                                    <button class="glow-theme-btn active" data-theme="cyan-purple">Cyan & Purple</button>
+                                    <button class="glow-theme-btn" data-theme="pink-blue">Pink & Blue</button>
+                                    <button class="glow-theme-btn" data-theme="pure-dark">Monochrome Slate</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Provisioning Modal Overlay -->
+    <div class="modal-overlay" id="provisioning-modal">
+        <div class="modal-card glass-card">
+            <div class="modal-header">
+                <h3>Deploying Sandbox Virtual Machine</h3>
+                <span class="estimated-time" id="prov-eta">ETA: ~45s</span>
+            </div>
+            
+            <div class="provision-steps">
+                <div class="prov-step" id="prov-step-1">
+                    <span class="indicator"><i class="fa-solid fa-circle-notch fa-spin"></i></span>
+                    <span class="label">Step 1: Checking Agent Health</span>
+                </div>
+                <div class="prov-step" id="prov-step-2">
+                    <span class="indicator"><i class="fa-solid fa-circle"></i></span>
+                    <span class="label">Step 2: Checking Master Template</span>
+                </div>
+                <div class="prov-step" id="prov-step-3">
+                    <span class="indicator"><i class="fa-solid fa-circle"></i></span>
+                    <span class="label">Step 3: Cloning Virtual Machine</span>
+                </div>
+                <div class="prov-step" id="prov-step-4">
+                    <span class="indicator"><i class="fa-solid fa-circle"></i></span>
+                    <span class="label">Step 4: Registering VM</span>
+                </div>
+                <div class="prov-step" id="prov-step-5">
+                    <span class="indicator"><i class="fa-solid fa-circle"></i></span>
+                    <span class="label">Step 5: Starting VM</span>
+                </div>
+                <div class="prov-step" id="prov-step-6">
+                    <span class="indicator"><i class="fa-solid fa-circle"></i></span>
+                    <span class="label">Step 6: Waiting for VM Boot</span>
+                </div>
+                <div class="prov-step" id="prov-step-7">
+                    <span class="indicator"><i class="fa-solid fa-circle"></i></span>
+                    <span class="label">Step 7: Collecting VM Information</span>
+                </div>
+                <div class="prov-step" id="prov-step-8">
+                    <span class="indicator"><i class="fa-solid fa-circle"></i></span>
+                    <span class="label">Step 8: Deployment Complete</span>
+                </div>
+            </div>
+
+            <div class="prov-progress-container">
+                <div class="progress-bar-large"><div class="fill" id="prov-progress-fill" style="width: 0%"></div></div>
+                <span class="progress-percentage" id="prov-percentage">0%</span>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="btn-cancel-provisioning" disabled>Abort Deployment</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Command Palette Overlay (Ctrl+K) -->
+    <div class="cmd-palette-overlay" id="command-palette">
+        <div class="cmd-palette-card glass-card">
+            <div class="cmd-input-container">
+                <i class="fa-solid fa-terminal"></i>
+                <input type="text" id="cmd-search-input" placeholder="Type a command or search action...">
+                <span class="cmd-esc-hint">ESC</span>
+            </div>
+            <div class="cmd-results" id="cmd-results-list">
+                <!-- Group Navigation -->
+                <div class="cmd-group">Navigation</div>
+                <div class="cmd-item" data-action="go-tab" data-param="dashboard">
+                    <i class="fa-solid fa-chevron-right"></i> Navigate to Dashboard
+                </div>
+                <div class="cmd-item" data-action="go-tab" data-param="templates">
+                    <i class="fa-solid fa-chevron-right"></i> Navigate to Templates
+                </div>
+                <div class="cmd-item" data-action="go-tab" data-param="running-vms">
+                    <i class="fa-solid fa-chevron-right"></i> Navigate to Deployed VMs
+                </div>
+                <div class="cmd-item" data-action="go-tab" data-param="activity">
+                    <i class="fa-solid fa-chevron-right"></i> View Activity Timeline
+                </div>
+
+                <!-- Group Actions -->
+                <div class="cmd-group">Quick Commands</div>
+                <div class="cmd-item" data-action="cmd-palette-deploy">
+                    <i class="fa-solid fa-bolt"></i> Deploy a fresh Virtual Machine...
+                </div>
+                <div class="cmd-item" data-action="cmd-palette-stop-all">
+                    <i class="fa-solid fa-circle-stop"></i> Power down all running clones
+                </div>
+                <div class="cmd-item" data-action="cmd-palette-agent-check">
+                    <i class="fa-solid fa-network-wired"></i> Run Agent connection diagnostic
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating AI Assistant Button & Widget -->
+    <div class="ai-assistant-widget" id="ai-assistant-wrapper">
+        <div class="ai-chat-window glass-card" id="ai-chat-window">
+            <div class="ai-chat-header">
+                <div class="ai-avatar"><i class="fa-solid fa-robot"></i></div>
+                <div>
+                    <h4>AGY Assistant</h4>
+                    <span class="ai-status">Online • Agent Copilot</span>
+                </div>
+                <button class="ai-close-btn" id="btn-close-ai-chat"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="ai-chat-body" id="ai-chat-messages">
+                <div class="ai-msg bot">
+                    <p>Welcome to VM Portal! I am AGY, your local virtualization copilot. Ask me questions like:
+                       <br>• <i>"How do I create a template?"</i>
+                       <br>• <i>"Explain the full clone architecture."</i>
+                       <br>• <i>"Start my Kali VM."</i>
+                    </p>
+                </div>
+            </div>
+            <div class="ai-chat-footer">
+                <input type="text" id="ai-chat-input" placeholder="Type a message...">
+                <button id="btn-send-ai-msg"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+        </div>
+        
+        <button class="ai-assistant-btn" id="ai-assistant-trigger" title="AI Virtualization Copilot">
+            <i class="fa-solid fa-robot"></i>
+        </button>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Firebase SDK (V9 compat package style) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <!-- Custom scripts -->
+    <script src="firebase-auth.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>

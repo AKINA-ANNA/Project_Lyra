@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VM Portal — Provision Virtual Machines in Seconds</title>
+    <!-- Google Fonts Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <!-- Canvas for Floating Particle Background -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- Aurora Background Blobs -->
+    <div class="aurora-container">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Dark Glass Header/Navbar -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <div class="logo-icon"><i class="fa-solid fa-cube"></i></div>
+                <span>VM PORTAL</span>
+            </a>
+            <nav class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How It Works</a>
+                <a href="#setup-wizard" class="nav-setup-link">Setup Guide</a>
+            </nav>
+            <div class="nav-actions">
+                <button class="btn btn-secondary nav-explore-btn" onclick="scrollToSection('features')">Explore Platform</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main>
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="grid-overlay"></div>
+            <div class="hero-container">
+                <!-- Hero Left: Typography & CTAs -->
+                <div class="hero-content">
+                    <div class="badge animate-fade-in">
+                        <span class="pulse-dot"></span> Powered by VirtualBox Local API
+                    </div>
+                    <h1 class="hero-title animate-title">
+                        Deploy Virtual <br>
+                        <span class="gradient-text">Machines</span> in Seconds
+                    </h1>
+                    <p class="hero-subtitle animate-fade-in-delay">
+                        Provision, manage, and monitor virtual machines running on your local machine with one click. Simple, secure, and blazing fast.
+                    </p>
+                    
+                    <!-- Authenticated CTA Buttons -->
+                    <div class="cta-group animate-fade-in-delay2">
+                        <button class="btn btn-google" id="login-google-btn">
+                            <i class="fa-brands fa-google"></i> Sign in with Google
+                        </button>
+                        <button class="btn btn-github" id="login-github-btn">
+                            <i class="fa-brands fa-github"></i> Sign in with GitHub
+                        </button>
+                    </div>
+                    <div class="dev-bypass-container animate-fade-in-delay2">
+                        <span class="bypass-text">Or test without OAuth:</span>
+                        <button class="btn btn-glow btn-bypass" id="bypass-login-btn">
+                            <i class="fa-solid fa-bolt"></i> Bypass to Console
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Hero Right: Live 3D Floating VM Card -->
+                <div class="hero-visual">
+                    <div class="vm-card-3d" id="hero-vm-card">
+                        <div class="vm-card-inner">
+                            <div class="vm-card-header">
+                                <div class="vm-os-icon">
+                                    <i class="fa-brands fa-linux"></i>
+                                </div>
+                                <div class="vm-title-area">
+                                    <h3>Kali-Master-Clone</h3>
+                                    <span class="vm-status status-running"><span class="pulse-indicator"></span> Running</span>
+                                </div>
+                                <div class="vm-actions-dots"><i class="fa-solid fa-ellipsis"></i></div>
+                            </div>
+                            <div class="vm-card-body">
+                                <div class="metric-row">
+                                    <span class="metric-label">CPU Cores</span>
+                                    <div class="metric-value-container">
+                                        <div class="metric-bar"><div class="fill" style="width: 25%"></div></div>
+                                        <span class="metric-text">1 vCPU</span>
+                                    </div>
+                                </div>
+                                <div class="metric-row">
+                                    <span class="metric-label">RAM Allocation</span>
+                                    <div class="metric-value-container">
+                                        <div class="metric-bar"><div class="fill" style="width: 50%"></div></div>
+                                        <span class="metric-text">2048 MB</span>
+                                    </div>
+                                </div>
+                                <div class="metric-row">
+                                    <span class="metric-label">Disk Storage</span>
+                                    <div class="metric-value-container">
+                                        <div class="metric-bar"><div class="fill" style="width: 40%"></div></div>
+                                        <span class="metric-text">16.4 GB</span>
+                                    </div>
+                                </div>
+                                <div class="vm-divider"></div>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <span class="info-label">IP ADDRESS</span>
+                                        <span class="info-val">10.0.2.15</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">SNAPSHOT USED</span>
+                                        <span class="info-val">GoldenMaster</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="vm-card-footer">
+                                <div class="console-label"><i class="fa-solid fa-terminal"></i> Console Port Active</div>
+                                <div class="glass-sparkle"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mouse Reactive Light Overlay -->
+            <div class="mouse-light" id="mouse-glow"></div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="section-container">
+            <h2 class="section-title">Engineered for Performance</h2>
+            <p class="section-subtitle">Experience a new standard in local virtualization management</p>
+            
+            <div class="features-grid">
+                <div class="glass-card feature-card">
+                    <div class="icon-glow icon-blue"><i class="fa-solid fa-bolt"></i></div>
+                    <h3>One Click Provisioning</h3>
+                    <p>Clone and deploy independent environments instantly from pre-configured master images.</p>
+                </div>
+                <div class="glass-card feature-card">
+                    <div class="icon-glow icon-purple"><i class="fa-solid fa-chart-line"></i></div>
+                    <h3>Live Resource Monitoring</h3>
+                    <p>Track guest CPU, RAM and disk allocations in real-time straight from your console.</p>
+                </div>
+                <div class="glass-card feature-card">
+                    <div class="icon-glow icon-cyan"><i class="fa-solid fa-shield-halved"></i></div>
+                    <h3>Secure OAuth Login</h3>
+                    <p>Authenticate with Google or GitHub, binding sessions and keys securely with Firebase.</p>
+                </div>
+                <div class="glass-card feature-card">
+                    <div class="icon-glow icon-pink"><i class="fa-solid fa-camera"></i></div>
+                    <h3>Full VM Independence</h3>
+                    <p>Deploy decoupled full clones ensuring reliability, zero parent-disk dependencies, and performance.</p>
+                </div>
+                <div class="glass-card feature-card">
+                    <div class="icon-glow icon-green"><i class="fa-solid fa-box-archive"></i></div>
+                    <h3>VirtualBox Integration</h3>
+                    <p>Control Oracle VirtualBox directly via VBoxManage subprocesses without complex setup layers.</p>
+                </div>
+                <div class="glass-card feature-card">
+                    <div class="icon-glow icon-orange"><i class="fa-solid fa-bell"></i></div>
+                    <h3>Smart Idle Notification</h3>
+                    <p>Receive live notifications and status warnings if host metrics spike or a VM errors.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section id="how-it-works" class="section-container">
+            <h2 class="section-title">Continuous Operations</h2>
+            <p class="section-subtitle">From master template to fully functional sandbox in a single flow</p>
+            
+            <div class="timeline-container">
+                <div class="timeline-line"></div>
+                <div class="timeline-step">
+                    <div class="step-number">1</div>
+                    <h4>Select Template</h4>
+                    <p>Choose an admin-provided Master template VM (e.g. Kali-Master).</p>
+                </div>
+                <div class="timeline-step">
+                    <div class="step-number">2</div>
+                    <h4>Provision VM</h4>
+                    <p>FastAPI Agent clones, registers, and starts the VM in headless mode.</p>
+                </div>
+                <div class="timeline-step">
+                    <div class="step-number">3</div>
+                    <h4>Monitor Resources</h4>
+                    <p>Observe live virtual metrics, host CPU utilization, and guest network status.</p>
+                </div>
+                <div class="timeline-step">
+                    <div class="step-number">4</div>
+                    <h4>Manage Anytime</h4>
+                    <p>Start, stop, restart, restore snapshot, or open the VM console in a click.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dedicated Setup / Installation Wizard Section -->
+        <section id="setup-wizard" class="section-container wizard-section">
+            <h2 class="section-title">Local Agent Setup Wizard</h2>
+            <p class="section-subtitle">Follow these quick steps to set up VirtualBox and the FastAPI Agent</p>
+            
+            <div class="wizard-grid">
+                <!-- Left: Guide Cards -->
+                <div class="wizard-steps-container">
+                    <div class="wizard-step-item" id="wizard-step-1">
+                        <div class="wizard-step-indicator"><i class="fa-solid fa-download"></i></div>
+                        <div class="wizard-step-content">
+                            <h5>Step 1: Install Oracle VirtualBox</h5>
+                            <p>Download and install VirtualBox on your Windows host. Ensure VBoxManage.exe is in standard folders.</p>
+                        </div>
+                    </div>
+                    <div class="wizard-step-item" id="wizard-step-2">
+                        <div class="wizard-step-indicator"><i class="fa-solid fa-file-import"></i></div>
+                        <div class="wizard-step-content">
+                            <h5>Step 2: Import Master VMs</h5>
+                            <p>Import or build template VMs, naming them with suffix <code>-Master</code> (e.g. <code>Kali-Master</code>, <code>Ubuntu-Master</code>).</p>
+                        </div>
+                    </div>
+                    <div class="wizard-step-item" id="wizard-step-3">
+                        <div class="wizard-step-indicator"><i class="fa-solid fa-camera-retro"></i></div>
+                        <div class="wizard-step-content">
+                            <h5>Step 3: Create 'GoldenMaster' Snapshot</h5>
+                            <p>For each Master VM, take a snapshot named exactly <code>GoldenMaster</code>. This is required for deployment verification.</p>
+                        </div>
+                    </div>
+                    <div class="wizard-step-item" id="wizard-step-4">
+                        <div class="wizard-step-indicator"><i class="fa-solid fa-code"></i></div>
+                        <div class="wizard-step-content">
+                            <h5>Step 4: Launch VM Portal Agent</h5>
+                            <p>Run <code>pip install -r requirements.txt</code> inside the agent directory, then start with <code>python main.py</code>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Status Checker Card -->
+                <div class="glass-card status-checker-card">
+                    <div class="status-header">
+                        <h3>Agent Connection Checker</h3>
+                        <span class="status-badge status-checking" id="agent-status-indicator">
+                            <span class="pulse-indicator"></span> Checking Agent
+                        </span>
+                    </div>
+                    <div class="status-body">
+                        <div class="check-item" id="check-agent-running">
+                            <div class="check-status"><i class="fa-solid fa-circle-notch fa-spin"></i></div>
+                            <div class="check-label">FastAPI Local Agent running</div>
+                        </div>
+                        <div class="check-item" id="check-vbox-installed">
+                            <div class="check-status"><i class="fa-solid fa-circle-notch fa-spin"></i></div>
+                            <div class="check-label">VirtualBox installation verified</div>
+                        </div>
+                        <div class="check-item" id="check-templates-discovered">
+                            <div class="check-status"><i class="fa-solid fa-circle-notch fa-spin"></i></div>
+                            <div class="check-label">Master VM templates discovered</div>
+                        </div>
+                        <div class="check-item" id="check-snapshot-verified">
+                            <div class="check-status"><i class="fa-solid fa-circle-notch fa-spin"></i></div>
+                            <div class="check-label">Required 'GoldenMaster' snapshot verified</div>
+                        </div>
+                    </div>
+                    <div class="status-footer">
+                        <button class="btn btn-glow btn-block" id="btn-verify-connection">
+                            <i class="fa-solid fa-arrows-rotate"></i> Verify Connection
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <p>&copy; 2026 VM Portal. Control real sandbox virtual machines with extreme speeds.</p>
+            <div class="footer-links">
+                <a href="#setup-wizard">Setup</a>
+                <a href="https://github.com" target="_blank"><i class="fa-brands fa-github"></i> GitHub Documentation</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Full Onboarding Screen Overlay (Locks dashboard if agent isn't connected) -->
+    <div class="onboarding-overlay" id="onboarding-overlay">
+        <div class="onboarding-card glass-card">
+            <div class="logo logo-large">
+                <div class="logo-icon"><i class="fa-solid fa-cube fa-spin"></i></div>
+                <span>VM PORTAL</span>
+            </div>
+            <h2>Connecting Local VM Agent</h2>
+            <p class="onboarding-desc">
+                VM Portal requires the Local VM Agent to interface with VirtualBox. Browsers cannot execute OS commands directly.
+            </p>
+            
+            <div class="onboarding-steps">
+                <div class="step-card">
+                    <div class="step-icon"><i class="fa-solid fa-terminal"></i></div>
+                    <div>
+                        <h4>1. Start Local Agent</h4>
+                        <code>python agent/main.py</code>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-icon"><i class="fa-solid fa-network-wired"></i></div>
+                    <div>
+                        <h4>2. Runs on localhost</h4>
+                        <p>Listens only on <code>http://127.0.0.1:8000</code></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Onboarding Checklist -->
+            <div class="mini-checklist">
+                <div class="mini-check" id="mini-check-agent">
+                    <span class="icon-circle"><i class="fa-solid fa-circle-notch fa-spin"></i></span> FastAPI Local Agent
+                </div>
+                <div class="mini-check" id="mini-check-vbox">
+                    <span class="icon-circle"><i class="fa-solid fa-circle-notch fa-spin"></i></span> VirtualBox Installation
+                </div>
+                <div class="mini-check" id="mini-check-master">
+                    <span class="icon-circle"><i class="fa-solid fa-circle-notch fa-spin"></i></span> At Least One Master VM (*-Master)
+                </div>
+                <div class="mini-check" id="mini-check-snap">
+                    <span class="icon-circle"><i class="fa-solid fa-circle-notch fa-spin"></i></span> Snapshot 'GoldenMaster'
+                </div>
+            </div>
+
+            <div class="onboarding-actions">
+                <button class="btn btn-secondary" id="btn-onboarding-retry">
+                    <i class="fa-solid fa-arrows-rotate"></i> Retry Connection
+                </button>
+                <button class="btn btn-glow" id="btn-onboarding-proceed" disabled>
+                    Enter Console <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Auth Scripts (V9 compat package style) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <!-- Custom scripts -->
+    <script src="firebase-auth.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
